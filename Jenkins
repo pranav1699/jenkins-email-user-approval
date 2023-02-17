@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    stages {
+        stage("Clone repo"){
+            steps {
+                echo "Cloning the github repo"
+            }
+        }
+        stage("Creating the test csv file"){
+            steps{
+                echo "echo 'Hello world,1' >> test.csv"
+            }
+            
+        }
+        stage("Send email for approval"){
+            steps {
+        
+            emailext body: "Waiting for the approval for the Job ${env.JOB_NAME}\\nMore Info can be found here: ${env.BUILD_URL}", 
+            subject: "Approval jenkins build:${currentBuild.currentResult}: ${env.JOB_NAME}", 
+            to: "test@gmail.com",
+            attachLog: true
+            
+            }
+        }
+        stage("Deploy") {
+            input {
+                message "Ready to deploy?"
+                ok "Yes"
+            }
+            steps {
+                echo "Deployment stage."
+            }
+        }
+    }
+}
